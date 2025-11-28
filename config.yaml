@@ -1,0 +1,103 @@
+# NLP Character RNN Suite - Configuration
+# Portfolio Project by Imran Pollob
+
+# Global Settings
+project_name: "nlp-rnn-suite"
+seed: 42
+device: "auto" # auto (detect CUDA), cuda, or cpu
+
+# Paths
+data_dir: "datasets"
+output_dir: "outputs"
+checkpoint_dir: "models"
+log_dir: "outputs/logs"
+
+# Data Settings
+train_split: 0.85
+val_split: 0.15
+
+# Common Training Settings
+batch_size: 64
+num_workers: 0 # Set to 0 for Windows compatibility
+log_interval: 100
+save_interval: 1000
+
+# Character-level Settings
+all_letters: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ .,;'"
+
+# Classification Model Config
+classifier:
+  model_type: "LSTM" # LSTM or GRU
+  input_size: 57 # len(all_letters)
+  hidden_size: 256
+  num_layers: 2
+  dropout: 0.3
+  output_size: 18 # number of languages
+
+  # Training
+  epochs: 20
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  gradient_clip: 5.0
+  early_stopping_patience: 5
+
+  # Inference
+  top_k: 3
+
+# Generation Model Config
+generator:
+  model_type: "LSTM"
+  input_size: 57 # all_letters
+  category_size: 18 # number of languages
+  hidden_size: 256
+  num_layers: 2
+  dropout: 0.2
+  output_size: 57 # predict next character
+
+  # Training
+  epochs: 100000 # iterations, not epochs
+  learning_rate: 0.0005
+  gradient_clip: 5.0
+  print_every: 5000
+
+  # Inference
+  max_length: 20
+  temperature: 0.8
+  use_top_k: false
+  top_k_sampling: 5
+
+# Translation Model Config
+translator:
+  encoder:
+    embedding_size: 256
+    hidden_size: 512
+    num_layers: 2
+    dropout: 0.1
+    bidirectional: true
+
+  decoder:
+    embedding_size: 256
+    hidden_size: 512
+    num_layers: 2
+    dropout: 0.1
+    attention_type: "bahdanau" # bahdanau or luong
+
+  # Training
+  epochs: 100
+  learning_rate: 0.001
+  teacher_forcing_ratio: 0.5
+  gradient_clip: 5.0
+  max_length: 10 # max sentence length
+
+  # Inference
+  beam_width: 1 # 1 for greedy, >1 for beam search
+  max_decode_length: 50
+
+# Visualization
+plot_style: "seaborn-v0_8-darkgrid"
+figure_size: [10, 8]
+dpi: 100
+
+# Logging
+use_tensorboard: false
+verbose: true
